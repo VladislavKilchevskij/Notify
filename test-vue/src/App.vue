@@ -99,22 +99,17 @@ function updateInputWindowShowInfo(proxy) {
   width: 100%;
   height: 25%;
   border-bottom: 0.25px solid rgba(255, 255, 255, 0.35);
-  background: url("N.svg") no-repeat center / 70%;
+  background: url("N.svg") no-repeat center / contain;
 }
-
 .side-bar__panel {
   margin: 10px 0;
   border-bottom: 0.25px solid rgba(255, 255, 255, 0.35);
 }
-
 .side-bar__btn {
   height: 50px;
   width: 100%;
-  color: #fff;
-  font-size: 1.2em;
   border-radius: 7px;
   margin-bottom: 10px;
-  padding: 0 8px;
   background: rgba(3, 205, 130, 0.5);
 }
 
@@ -128,16 +123,10 @@ function updateInputWindowShowInfo(proxy) {
   background: url("/main.jpg") no-repeat center / cover;
 }
 
-.nav {
-  width: 100%;
-  height: 7%;
-}
-
 .notes-area {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
-  position: relative;
 }
 </style>

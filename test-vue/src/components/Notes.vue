@@ -1,5 +1,5 @@
 <script setup>
-import { loadState, getNotes, deleteNote } from "../stores/NoteLocalStore";
+import { loadState, getNotes } from "../stores/NoteLocalStore";
 loadState();
 </script>
 
@@ -18,15 +18,18 @@ loadState();
       <p class="note__body">
         {{ note.body }}
       </p>
-      <button
-        class="btn note__btn note__btn_delete"
-        @click.stop="
-          $emit('deleteClick', {
-            target: note,
-            msg: `Вы действительно хотите удалить заметку?`,
-          })
-        "
-      ></button>
+      <div class="note__panel">
+        <p class="note__timestamp">{{ note.timestamp }}</p>
+        <button
+          class="btn note__btn"
+          @click.stop="
+            $emit('deleteClick', {
+              target: note,
+              msg: `Вы действительно хотите удалить заметку?`,
+            })
+          "
+        ></button>
+      </div>
     </div>
   </div>
 </template>
@@ -48,19 +51,23 @@ loadState();
   height: 200px;
   width: 225px;
   margin: 10px;
+  padding: 10px;
   border-radius: 5px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(214, 214, 214);
   box-shadow: 0px 5px 7px -1px rgb(64, 64, 64);
   color: rgb(44, 44, 44);
-  position: relative;
   transition: all 0.35s ease;
+  cursor: pointer;
+  display: inline-grid;
+  grid-template-columns: auto;
+  grid-template-rows: 1.5em auto 1.4em;
+  gap: 0.5em;
 }
 
 .note:hover {
   box-shadow: 0px 7px 15px -2px rgb(64, 64, 64);
   transform: translate(0, -5px);
-  cursor: pointer;
 }
 
 .note:active {
@@ -69,29 +76,22 @@ loadState();
 }
 
 .note__title {
-  position: absolute;
-  top: 7%;
-  left: 5%;
-  width: 70%;
-  margin: 0 auto 0 0;
   font-size: 20px;
+  line-height: 1em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .note__body {
-  position: absolute;
-  top: 23%;
-  left: 5%;
-  height: 58%;
-  width: 90%;
-  display: flex;
   overflow: hidden;
+  position: relative;
 }
 
 .note__body::after {
   content: "";
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   position: absolute;
@@ -101,35 +101,21 @@ loadState();
     rgba(255, 255, 255, 1) 100%
   );
 }
+
+.note__panel {
+  display: flex;
+  justify-content: space-between;
+}
+
 .note__btn {
-  position: absolute;
-  border-style: none;
   width: 24px;
   height: 24px;
   border-radius: 10%;
-  outline: none;
-  align-self: flex-end;
-}
-
-.note__btn_delete {
-  bottom: 7%;
-  right: 5%;
   background: url("trash-bin.ico") no-repeat center / 70%;
 }
 
-.note__btn_delete:hover {
+.note__btn:hover {
   background: url("trash-bin.ico") no-repeat center center / 70%,
     rgba(255, 45, 45, 0.7);
-}
-
-.note__btn_edit {
-  top: 7%;
-  right: 5%;
-  background: url("edit.png") no-repeat center / 70%;
-}
-
-.note__btn_edit:hover {
-  background: url("edit.png") no-repeat center center / 70%,
-    rgba(72, 160, 238, 0.7);
 }
 </style>

@@ -17,16 +17,16 @@ async function submitForm(note) {
 </script>
 
 <template>
-  <Transition name="slide-left">
+  <Transition name="hide-left">
     <form @submit.prevent="submitForm(note)" class="window-area" v-if="show">
       <input
         type="text"
-        class="window-area__title-input"
+        class="window-area__input window-area__input_title"
         placeholder="Title"
         v-model="note.title"
       />
       <textarea
-        class="window-area__body-input"
+        class="window-area__input window-area__input_body"
         placeholder="Description"
         v-model="note.body"
       >
@@ -51,51 +51,41 @@ async function submitForm(note) {
   height: 100%;
   width: 67%;
   background: #fff;
-  border: 0.25px solid rgba(0, 0, 0, 0.3);
-  font-family: Helvetica, sans-serif;
-}
-
-.window-area__title-input,
-.window-area__body-input {
-  transition: all 0.35s;
-  border: none;
-}
-
-.window-area__title-input {
-  width: 30%;
-  height: 4.1%;
   border-right: 0.25px solid rgba(0, 0, 0, 0.3);
-  outline: 0;
-  padding: 4px 10px;
-  font-weight: bold;
+  display: inline-grid;
+  grid-template-columns: auto;
+  grid-template-rows: 4% auto 5%;
 }
 
-.window-area__title-input:focus {
+.window-area__input {
+  border: none;
+  outline: 0;
+}
+
+.window-area__input_title {
+  width: 30%;
+  line-height: 1em;
+  border-right: 0.25px solid rgba(0, 0, 0, 0.3);
+  padding: 0 10px;
+  font-size: 20px;
+  font-weight: bold;
+  transition: all 0.35s ease;
+}
+
+.window-area__input_title:focus {
   width: 60%;
 }
 
-.window-area__body-input {
-  width: 100%;
-  height: 90%;
+.window-area__input_body {
   padding: 10px;
   border-top: 0.25px solid rgba(0, 0, 0, 0.3);
   border-bottom: 0.25px solid rgba(0, 0, 0, 0.3);
   resize: none;
-  outline: 0;
-}
-
-.window-area__bottom-panel {
-  width: 100%;
-  height: 6%;
-  margin-top: -4px;
-  margin-left: -1px;
 }
 .window-area__btn {
   display: inline-block;
   height: 100%;
-  width: fit-content;
   width: 20%;
-  border: none;
 }
 
 .window-area__btn_blue {
@@ -113,14 +103,16 @@ async function submitForm(note) {
   background: #e71212;
 }
 
-.slide-left-enter-from,
-.slide-left-leave-to {
+/* Transition component properties */
+
+.hide-left-enter-from,
+.hide-left-leave-to {
   opacity: 0;
   width: 0%;
 }
 
-.slide-left-enter-active,
-.slide-left-leave-active {
+.hide-left-enter-active,
+.hide-left-leave-active {
   transition: all 1s ease;
 }
 </style>

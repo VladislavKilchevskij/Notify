@@ -67,14 +67,12 @@ function closeClick() {
   justify-content: center;
 }
 
-.modal-container__btn {
+.modal-container__btn, .panel :slotted(.slot-btn) {
   padding: 2% 5%;
   border-radius: 5px;
 }
 
 .panel :slotted(.slot-btn) {
-  padding: 2% 5%;
-  border-radius: 5px;
   background: rgb(255, 126, 126);
 }
 
@@ -90,6 +88,7 @@ function closeClick() {
 .modal-container__btn_close:hover {
   background: rgb(110, 110, 110);
 }
+
 /* Transition component properties */
 
 .modal-enter-from,
@@ -99,7 +98,6 @@ function closeClick() {
 
 .modal-enter-from .modal-container,
 .modal-leave-to .modal-container {
-  -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
 

@@ -34,11 +34,19 @@ async function saveOrUpdate(note) {
         return proxy;
     }
 
-    const serializableNote = { title: note.title, body: note.body };
+    const serializableNote = {
+        title: note.title, body: note.body, timestamp: new Date().toLocaleString("ru", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    };
     idb.saveNote(serializableNote);
     console.log(`Note ${note.title} saved`);
     proxy.target = Object.assign({}, await getNote(serializableNote.title));
-    proxy.msg = `Заметка "${note.title}" сохранена!`;
+    proxy.msg = `Заметка сохранена!`;
     return proxy;
 };
 
