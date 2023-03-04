@@ -68,8 +68,8 @@ function closeClick() {
 }
 
 .modal-container__btn {
-  padding: 2% 5% !important;
-  border-radius: 5px !important;
+  padding: 2% 5%;
+  border-radius: 5px;
 }
 
 .panel :slotted(.slot-btn) {

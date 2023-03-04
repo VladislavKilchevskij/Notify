@@ -23,7 +23,7 @@ loadState();
         @click.stop="
           $emit('deleteClick', {
             target: note,
-            msg: `Вы действительно хотите удалить заметку ${note.title} ?`,
+            msg: `Вы действительно хотите удалить заметку?`,
           })
         "
       ></button>
