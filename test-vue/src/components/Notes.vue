@@ -1,13 +1,14 @@
 <script setup>
-import { loadState, getNotes } from "../stores/NoteLocalStore";
-loadState();
+const props = defineProps({
+  notes: Array,
+})
 </script>
 
 <template>
   <div class="notes-list">
     <div
       class="note"
-      v-for="note of getNotes"
+      v-for="note of notes"
       :key="note.id"
       :note="note"
       @click="$emit('transferData:note', note), $emit('update:show')"

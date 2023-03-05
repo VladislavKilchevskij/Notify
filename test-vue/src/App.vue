@@ -1,15 +1,31 @@
 <script setup>
-import { ref } from "vue";
-import { deleteNote } from "./stores/NoteLocalStore";
+import { ref, onMounted, computed } from "vue";
+import { loadState, getNotes, deleteNote } from "./stores/NoteLocalStore";
 import InputWindow from "./components/InputWindow.vue";
 import Notes from "./components/Notes.vue";
 import Modal from "./components/Modal.vue";
+onMounted(async () => {
+  await loadState();
+});
+const searchString = ref("");
+const notes = ref(getNotes);
 const windowNote = ref({});
 const showWindow = ref(false);
 const modalNote = ref({});
 const showModalDelete = ref(false);
 const messageModal = ref("");
 const showModalInfo = ref(false);
+
+const filteredNotes = computed(() => {
+  return notes.value.filter((note) => {
+    if (
+      note.title.includes(searchString.value) ||
+      note.body.includes(searchString.value)
+    ) {
+      return note;
+    }
+  });
+});
 
 function createEmptyNote() {
   windowNote.value = {};
@@ -33,15 +49,23 @@ function updateInputWindowShowInfo(proxy) {
 
 <template>
   <div class="container">
-    <div class="side-bar">
+    <section class="side-bar">
       <div class="side-bar__logo"></div>
       <div class="side-bar__panel">
         <button @click="createEmptyNote" class="btn side-bar__btn">
           Создать
         </button>
       </div>
-    </div>
-    <div class="main">
+    </section>
+    <section class="main">
+      <div class="nav-bar">
+        <input
+          v-model="searchString"
+          type="text"
+          class="nav-bar__search"
+          placeholder="Search..."
+        />
+      </div>
       <div class="notes-area">
         <Suspense>
           <InputWindow
@@ -51,17 +75,16 @@ function updateInputWindowShowInfo(proxy) {
             :note="windowNote"
           />
         </Suspense>
-        <Suspense>
-          <Notes
-            @update:show="showWindow = true"
-            @transferData:note="
-              (noteFromNotes) => (windowNote = Object.assign({}, noteFromNotes))
-            "
-            @deleteClick="(response) => removeNote(response)"
-          />
-        </Suspense>
+        <Notes
+          :notes="filteredNotes"
+          @update:show="showWindow = true"
+          @transferData:note="
+            (noteFromNotes) => (windowNote = Object.assign({}, noteFromNotes))
+          "
+          @deleteClick="(response) => removeNote(response)"
+        />
       </div>
-    </div>
+    </section>
     <Modal :show="showModalInfo" @closeModal="showModalInfo = false">
       <template #header>{{ messageModal }}</template>
     </Modal>
@@ -80,6 +103,8 @@ function updateInputWindowShowInfo(proxy) {
 .container {
   display: flex;
 }
+
+/* Side bar section*/
 
 .side-bar {
   width: 12vw;
@@ -117,15 +142,39 @@ function updateInputWindowShowInfo(proxy) {
   background: rgb(2, 184, 117);
 }
 
+/* Main section*/
+
 .main {
   width: 88vw;
   height: 100vh;
   background: url("/main.jpg") no-repeat center / cover;
 }
 
+/* Nav bar block */
+
+.nav-bar {
+  height: 6%;
+  background: rgb(16, 16, 16);
+  display: flex;
+  align-items: center;
+}
+
+.nav-bar__search {
+  width: 25%;
+  padding: 0.3em 1em;
+  border-radius: 1em;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 1);
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.35s ease;
+}
+
+/* Notes block */
+
 .notes-area {
   width: 100%;
-  height: 100%;
+  height: 94%;
   display: flex;
   justify-content: space-between;
 }

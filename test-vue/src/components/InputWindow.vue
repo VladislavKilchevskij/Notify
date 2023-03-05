@@ -7,13 +7,12 @@ const props = defineProps({
 const emit = defineEmits(["update:window"]);
 function updateWindow(response) {
   emit("update:window", response);
-};
+}
 
 async function submitForm(note) {
   const response = await saveOrUpdate(note);
-  console.log(response);
   updateWindow(response);
-};
+}
 </script>
 
 <template>
@@ -21,12 +20,12 @@ async function submitForm(note) {
     <form @submit.prevent="submitForm(note)" class="window-area" v-if="show">
       <input
         type="text"
-        class="window-area__input window-area__input_title"
+        class="window-area__input window-area__title"
         placeholder="Title"
         v-model="note.title"
       />
       <textarea
-        class="window-area__input window-area__input_body"
+        class="window-area__input window-area__body"
         placeholder="Description"
         v-model="note.body"
       >
@@ -57,12 +56,7 @@ async function submitForm(note) {
   grid-template-rows: 4% auto 5%;
 }
 
-.window-area__input {
-  border: none;
-  outline: 0;
-}
-
-.window-area__input_title {
+.window-area__title {
   width: 30%;
   line-height: 1em;
   border-right: 0.25px solid rgba(0, 0, 0, 0.3);
@@ -72,11 +66,11 @@ async function submitForm(note) {
   transition: all 0.35s ease;
 }
 
-.window-area__input_title:focus {
+.window-area__title:focus {
   width: 60%;
 }
 
-.window-area__input_body {
+.window-area__body {
   padding: 10px;
   border-top: 0.25px solid rgba(0, 0, 0, 0.3);
   border-bottom: 0.25px solid rgba(0, 0, 0, 0.3);
