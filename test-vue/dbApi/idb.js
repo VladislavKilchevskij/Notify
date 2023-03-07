@@ -1,3 +1,5 @@
+import { cloneNote } from "../src/utils/clone.js"
+
 const DB_NAME = 'notesDb'
 const STORAGE_NAME = 'notes'
 const DB_VERSION = 1
@@ -82,12 +84,9 @@ export default {
                 const cursor = event.target.result;
                 if (cursor) {
                     if (cursor.value.id === note.id) {
-                        const updateData = cursor.value;
-                        updateData.title = note.title;
-                        updateData.body = note.body;
+                        let updateData = cursor.value;
+                        updateData = cloneNote(note);
                         const updateRequest = cursor.update(updateData);
-                        updateRequest.onsuccess = () => {
-                        }
                     } else {
                         cursor.continue();
                     }

@@ -1,7 +1,18 @@
 <script setup>
 const props = defineProps({
   notes: Array,
-})
+});
+const emit = defineEmits(["transferData:note", "update:show", "deleteClick"]);
+function openNoteToEdit(note) {
+  emit("transferData:note", note);
+  emit("update:show");
+}
+function doDelete(item) {
+  let proxy = {};
+  proxy.target = item;
+  proxy.msg = "Вы действительно хотите удалить заметку?";
+  emit("deleteClick", proxy);
+}
 </script>
 
 <template>
@@ -11,8 +22,12 @@ const props = defineProps({
       v-for="note of notes"
       :key="note.id"
       :note="note"
-      @click="$emit('transferData:note', note), $emit('update:show')"
+      @click="openNoteToEdit(note)"
     >
+      <div
+        :style="{ background: note.category.color }"
+        class="note__category-color-indicator"
+      ></div>
       <h4 class="note__title">
         {{ note.title }}
       </h4>
@@ -21,15 +36,7 @@ const props = defineProps({
       </p>
       <div class="note__panel">
         <p class="note__timestamp">{{ note.timestamp }}</p>
-        <button
-          class="btn note__btn"
-          @click.stop="
-            $emit('deleteClick', {
-              target: note,
-              msg: `Вы действительно хотите удалить заметку?`,
-            })
-          "
-        ></button>
+        <button class="btn note__btn" @click.stop="doDelete(note)"></button>
       </div>
     </div>
   </div>
@@ -64,6 +71,7 @@ const props = defineProps({
   grid-template-columns: auto;
   grid-template-rows: 1.5em auto 1.4em;
   gap: 0.5em;
+  position: relative;
 }
 
 .note:hover {
@@ -74,6 +82,17 @@ const props = defineProps({
 .note:active {
   box-shadow: 0px 5px 7px -1px rgb(64, 64, 64);
   transform: translate(0);
+}
+
+.note__category-color-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3%;
+  background: #000;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .note__title {

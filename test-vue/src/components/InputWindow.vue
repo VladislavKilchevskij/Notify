@@ -1,8 +1,17 @@
 <script setup>
-import { saveOrUpdate } from "../stores/NoteLocalStore";
+import { saveOrUpdate, changeCategoryColor } from "../stores/NoteLocalStore";
 const props = defineProps({
   show: Boolean,
-  note: {},
+  note: {
+    title: String,
+    body: String,
+    category: {
+      name: String,
+      color: "",
+    },
+    timestamp: Date,
+  },
+  categories: Array,
 });
 const emit = defineEmits(["update:window"]);
 function updateWindow(response) {
@@ -10,6 +19,7 @@ function updateWindow(response) {
 }
 
 async function submitForm(note) {
+  changeCategoryColor(note);
   const response = await saveOrUpdate(note);
   updateWindow(response);
 }
@@ -18,16 +28,41 @@ async function submitForm(note) {
 <template>
   <Transition name="hide-left">
     <form @submit.prevent="submitForm(note)" class="window-area" v-if="show">
-      <input
-        type="text"
-        class="window-area__input window-area__title"
-        placeholder="Title"
-        v-model="note.title"
-      />
+      <div class="window-area__head">
+        <input
+          v-model="note.title"
+          class="window-area__input window-area__input_title"
+          type="text"
+          placeholder="Заголовок"
+        />
+        <input
+          v-model="note.category.color"
+          class="window-area__color"
+          type="color"
+          list="categoriesColor"
+        />
+        <datalist id="categoriesColor">
+          <option v-for="category of categories" :key="category">
+            {{ category.color }}
+          </option>
+        </datalist>
+        <input
+          v-model="note.category.name"
+          class="window-area__input window-area__input_category"
+          type="text"
+          list="categoriesName"
+          placeholder="Название и цвет категории"
+        />
+        <datalist id="categoriesName">
+          <option v-for="category of categories" :key="category">
+            {{ category.name }}
+          </option>
+        </datalist>
+      </div>
       <textarea
-        class="window-area__input window-area__body"
-        placeholder="Description"
         v-model="note.body"
+        class="window-area__body"
+        placeholder="Текст заметки"
       >
       </textarea>
       <div class="window-area__bottom-panel">
@@ -56,20 +91,59 @@ async function submitForm(note) {
   grid-template-rows: 4% auto 5%;
 }
 
-.window-area__title {
-  width: 30%;
-  line-height: 1em;
-  border-right: 0.25px solid rgba(0, 0, 0, 0.3);
-  padding: 0 10px;
-  font-size: 20px;
-  font-weight: bold;
-  transition: all 0.35s ease;
+.window-area__head {
+  display: flex;
 }
 
-.window-area__title:focus {
+.window-area__input {
+  height: 100%;
+  padding-left: 10px;
+  font-size: 20px;
+  transition: all 0.35s ease;
+}
+.window-area__input_title {
+  width: 40%;
+  font-weight: bold;
+  border-right: 0.25px solid rgba(0, 0, 0, 0.3);
+}
+
+.window-area__input_title:focus {
+  width: 75%;
+}
+
+.window-area__input_category {
   width: 60%;
 }
 
+.window-area__color {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  padding: 5px;
+  height: 100%;
+  max-width: 35px;
+  cursor: pointer;
+}
+
+.window-area__color::-webkit-color-swatch {
+  border-radius: 5px;
+  border: none;
+}
+
+.window-area__color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.window-area__color::-moz-color-swatch,
+.window-area__color::-moz-focus-inner {
+  border-radius: 5px;
+  border: 0;
+}
+
+.window-area__color::-moz-focus-inner {
+  padding: 0;
+}
 .window-area__body {
   padding: 10px;
   border-top: 0.25px solid rgba(0, 0, 0, 0.3);
@@ -110,4 +184,3 @@ async function submitForm(note) {
   transition: all 1s ease;
 }
 </style>
-

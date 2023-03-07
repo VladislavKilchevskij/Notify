@@ -1,23 +1,31 @@
 <script setup>
+import {
+  loadState,
+  getNotes,
+  getCategories,
+  deleteNote,
+} from "./stores/NoteLocalStore";
 import { ref, onMounted, computed } from "vue";
-import { loadState, getNotes, deleteNote } from "./stores/NoteLocalStore";
+import { cloneNote } from "./utils/clone.js";
 import InputWindow from "./components/InputWindow.vue";
 import Notes from "./components/Notes.vue";
+import Folders from "./components/Folders.vue";
 import Modal from "./components/Modal.vue";
 onMounted(async () => {
   await loadState();
 });
 const searchString = ref("");
-const notes = ref(getNotes);
-const windowNote = ref({});
+const currentCategory = ref("");
+const notesCategories = getCategories;
+const windowNote = ref({ category: { name: "", color: "" } });
 const showWindow = ref(false);
 const modalNote = ref({});
 const showModalDelete = ref(false);
 const messageModal = ref("");
 const showModalInfo = ref(false);
 
-const filteredNotes = computed(() => {
-  return notes.value.filter((note) => {
+const filteredBySearch = computed(() => {
+  return getNotes.value.filter((note) => {
     if (
       note.title.includes(searchString.value) ||
       note.body.includes(searchString.value)
@@ -27,9 +35,21 @@ const filteredNotes = computed(() => {
   });
 });
 
+const filteredByCategory = computed(() => {
+  return getNotes.value.filter((note) => {
+    if (note.category.name.includes(currentCategory.value)) {
+      return note;
+    }
+  });
+});
+
 function createEmptyNote() {
-  windowNote.value = {};
+  windowNote.value = { category: { name: "", color: "#000" } };
   showWindow.value = true;
+}
+function showNotesByCategory(name) {
+  currentCategory.value = name;
+  searchString.value = "";
 }
 function removeNote(response) {
   modalNote.value = response.target;
@@ -40,9 +60,8 @@ function infoModalEvent(msg) {
   showModalInfo.value = true;
   messageModal.value = msg;
 }
-
 function updateInputWindowShowInfo(proxy) {
-  windowNote.value = Object.assign({}, proxy.target);
+  windowNote.value = cloneNote(proxy.target);
   infoModalEvent(proxy.msg);
 }
 </script>
@@ -56,14 +75,18 @@ function updateInputWindowShowInfo(proxy) {
           Создать
         </button>
       </div>
+      <Folders
+        @transfer-category="(recievedName) => showNotesByCategory(recievedName)"
+        :categories="notesCategories"
+      ></Folders>
     </section>
     <section class="main">
       <div class="nav-bar">
         <input
           v-model="searchString"
-          type="text"
           class="nav-bar__search"
-          placeholder="Search..."
+          type="text"
+          placeholder="Поиск..."
         />
       </div>
       <div class="notes-area">
@@ -73,13 +96,14 @@ function updateInputWindowShowInfo(proxy) {
             @update:window="(response) => updateInputWindowShowInfo(response)"
             :show="showWindow"
             :note="windowNote"
+            :categories="notesCategories"
           />
         </Suspense>
         <Notes
-          :notes="filteredNotes"
+          :notes="searchString ? filteredBySearch : filteredByCategory"
           @update:show="showWindow = true"
           @transferData:note="
-            (noteFromNotes) => (windowNote = Object.assign({}, noteFromNotes))
+            (noteFromNotes) => (windowNote = cloneNote(noteFromNotes))
           "
           @deleteClick="(response) => removeNote(response)"
         />
@@ -123,12 +147,12 @@ function updateInputWindowShowInfo(proxy) {
 .side-bar__logo {
   width: 100%;
   height: 25%;
-  border-bottom: 0.25px solid rgba(255, 255, 255, 0.35);
   background: url("N.svg") no-repeat center / contain;
 }
 .side-bar__panel {
-  margin: 10px 0;
-  border-bottom: 0.25px solid rgba(255, 255, 255, 0.35);
+  padding-top: 10px;
+  border-top: 0.25px solid rgba(255, 255, 255, 0.35);
+  align-content: center;
 }
 .side-bar__btn {
   height: 50px;
@@ -160,7 +184,6 @@ function updateInputWindowShowInfo(proxy) {
 }
 
 .nav-bar__search {
-  width: 25%;
   padding: 0.3em 1em;
   border-radius: 1em;
   background: rgba(255, 255, 255, 0.15);

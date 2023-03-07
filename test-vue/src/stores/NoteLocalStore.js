@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import idb from '../../dbApi/idb';
+import { cloneNote } from '../utils/clone.js'
 
 const state = ref({ notes: [] });
 
@@ -7,45 +8,69 @@ function setNotes(notes) {
     state.value.notes = Array.from(notes);
 };
 
-const getNotes = computed(() => state.value.notes);
-
 async function loadState() {
     const notes = Array.from(await idb.getNotes());
     setNotes(notes);
 };
 
+const getNotes = computed(() => state.value.notes);
+const getNotesCounter = computed(() => state.value.notes.length);
+const getCategories = computed(() => {
+    let categories = [];
+    state.value.notes.forEach(note => {
+        if (!categories.filter(item => item.name === note.category.name).length > 0) {
+            note.category.count = state.value.notes.filter(elem => elem.category.name === note.category.name).length;
+            categories.push(note.category);
+        }
+    })
+    return categories;
+});
+
+
+/*---------------- CRUD functions ----------------*/
+
+async function getNote(title) {
+    await loadState();
+    const notes = state.value.notes;
+    let findedNote = {};
+    notes.forEach(item => {
+        if (item.title === title) {
+            findedNote = cloneNote(item);
+        }
+    })
+    return findedNote;
+}
+
 async function saveOrUpdate(note) {
     let proxy = {};
     if (isEmpty(note)) {
         proxy.target = Object.assign({}, note);
-        proxy.msg = "Введите заголовок и/или описание!";
+        proxy.msg = "Заполните все поля!";
         return proxy;
     }
     if (!isNew(note)) {
-        proxy.target = Object.assign({}, note);
+        proxy.target = cloneNote(note);
         proxy.msg = "Заметка с таким зоголовком и описанием уже существует!";
         return proxy;
     }
     if (note.id) {
         idb.replaceNote(note);
-        proxy.target = Object.assign({}, note);
+        proxy.target = cloneNote(note);
         proxy.msg = `Заметка обновлена!`;
         await loadState();
         return proxy;
     }
 
-    const serializableNote = {
-        title: note.title, body: note.body, timestamp: new Date().toLocaleString("ru", {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-        })
-    };
+    note.timestamp = new Date().toLocaleString("ru", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    })
+    const serializableNote = cloneNote(note);
     idb.saveNote(serializableNote);
-    console.log(`Note ${note.title} saved`);
-    proxy.target = Object.assign({}, await getNote(serializableNote.title));
+    proxy.target = cloneNote(await getNote(serializableNote.title));
     proxy.msg = `Заметка сохранена!`;
     return proxy;
 };
@@ -55,11 +80,13 @@ function deleteNote(note) {
     loadState();
 };
 
+/*---------------- Util store functions ----------------*/
+
 function isEmpty(note) {
-    if (!note.title || !note.body) {
+    if (!note.title || !note.body || !note.category.name) {
         return true;
     }
-}
+};
 
 function isNew(note) {
     const notes = state.value.notes;
@@ -74,23 +101,22 @@ function isNew(note) {
         }
     })
     return isNewNote;
-}
+};
 
-async function getNote(title) {
-    await loadState();
-    const notes = state.value.notes;
-    let findedNote = {};
-    notes.forEach(item => {
-        if (item.title === title) {
-            findedNote = Object.assign({}, item);
-        }
-    })
-    return findedNote;
+function changeCategoryColor(item) {
+    const filteredArray = state.value.notes.filter(elem => elem.category.name === item.category.name);
+    filteredArray.forEach(async elem => {
+        elem.category.color = item.category.color;
+        await idb.replaceNote(elem);
+    });
 }
 
 export {
     getNotes,
+    getNotesCounter,
+    getCategories,
     saveOrUpdate,
     loadState,
     deleteNote,
+    changeCategoryColor
 };
