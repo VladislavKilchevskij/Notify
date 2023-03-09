@@ -44,17 +44,24 @@ const filteredByCategory = computed(() => {
 });
 
 function createEmptyNote() {
-  windowNote.value = { category: { name: "", color: "#000" } };
+  windowNote.value = { category: { name: "", color: "" } };
   showWindow.value = true;
 }
 function showNotesByCategory(name) {
   currentCategory.value = name;
   searchString.value = "";
 }
-function removeNote(response) {
+function runDeleteModal(response) {
   modalNote.value = response.target;
   messageModal.value = response.msg;
   showModalDelete.value = true;
+}
+
+function removeNote(note) {
+  if (windowNote.value.id === note.id) {
+    windowNote.value = { category: { name: "", color: "" } };
+  }
+  deleteNote(note);
 }
 function infoModalEvent(msg) {
   showModalInfo.value = true;
@@ -68,10 +75,21 @@ function updateInputWindowShowInfo(proxy) {
 
 <template>
   <div class="container">
-    <section class="side-bar">
-      <div class="side-bar__logo"></div>
-      <div class="side-bar__panel">
-        <button @click="createEmptyNote" class="btn side-bar__btn">
+    <nav class="nav-bar">
+      <div class="nav-bar__logo logo-box">
+        <img class="logo-box__icon" src="N.svg" alt="logo_icon" />
+        <img class="logo-box__sign" src="logo.svg" alt="logo" />
+      </div>
+      <input
+        v-model="searchString"
+        class="nav-bar__search"
+        type="text"
+        placeholder="Поиск..."
+      />
+    </nav>
+    <asside class="asside-bar">
+      <div class="asside-bar__panel">
+        <button @click="createEmptyNote" class="btn asside-bar__btn">
           Создать
         </button>
       </div>
@@ -79,43 +97,34 @@ function updateInputWindowShowInfo(proxy) {
         @transfer-category="(recievedName) => showNotesByCategory(recievedName)"
         :categories="notesCategories"
       ></Folders>
-    </section>
-    <section class="main">
-      <div class="nav-bar">
-        <input
-          v-model="searchString"
-          class="nav-bar__search"
-          type="text"
-          placeholder="Поиск..."
+    </asside>
+    <main class="main">
+      <Suspense>
+        <InputWindow
+          @update:show="showWindow = false"
+          @update:window="(response) => updateInputWindowShowInfo(response)"
+          :show="showWindow"
+          :note="windowNote"
+          :categories="notesCategories"
         />
-      </div>
-      <div class="notes-area">
-        <Suspense>
-          <InputWindow
-            @update:show="showWindow = false"
-            @update:window="(response) => updateInputWindowShowInfo(response)"
-            :show="showWindow"
-            :note="windowNote"
-            :categories="notesCategories"
-          />
-        </Suspense>
-        <Notes
-          :notes="searchString ? filteredBySearch : filteredByCategory"
-          @update:show="showWindow = true"
-          @transferData:note="
-            (noteFromNotes) => (windowNote = cloneNote(noteFromNotes))
-          "
-          @deleteClick="(response) => removeNote(response)"
-        />
-      </div>
-    </section>
+      </Suspense>
+      <Notes
+        :notes="searchString ? filteredBySearch : filteredByCategory"
+        :isWindowActive="showWindow"
+        @update:show="showWindow = true"
+        @transferData:note="
+          (noteFromNotes) => (windowNote = cloneNote(noteFromNotes))
+        "
+        @deleteEvent="(response) => runDeleteModal(response)"
+      />
+    </main>
     <Modal :show="showModalInfo" @closeModal="showModalInfo = false">
       <template #header>{{ messageModal }}</template>
     </Modal>
     <Modal :show="showModalDelete" @closeModal="showModalDelete = false">
       <template #header>{{ messageModal }}</template>
       <template #body>
-        <button class="btn slot-btn" @click="deleteNote(modalNote)">
+        <button class="btn slot-btn" @click="removeNote(modalNote)">
           Удалить
         </button>
       </template>
@@ -125,14 +134,63 @@ function updateInputWindowShowInfo(proxy) {
 
 <style scoped>
 .container {
-  display: flex;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 5vh 95vh;
+  grid-template-columns: 10vw 90vw;
+  grid-template-areas:
+    "A A"
+    "B C";
 }
 
-/* Side bar section*/
+/*---------- Nav section ----------*/
 
-.side-bar {
-  width: 12vw;
-  height: 100vh;
+.nav-bar {
+  grid-area: A;
+  background: rgb(16, 16, 16);
+  display: flex;
+  align-items: center;
+}
+
+.logo-box {
+  width: 180px;
+  height: 100%;
+  margin-right: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-box__icon {
+  width: 35px;
+  height: 35px;
+}
+
+.logo-box__sign {
+  width: 75px;
+  height: 35px;
+  margin-left: 5px;
+}
+
+.nav-bar__search {
+  width: 90px;
+  padding: 0.3em 1em;
+  border-radius: 1em;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 1);
+  font-size: 16px;
+  transition: all 0.35s ease;
+}
+
+.nav-bar__search:hover, .nav-bar__search:focus {
+  width: 290px;
+}
+
+/*---------- Asside section ----------*/
+
+.asside-bar {
+  grid-area: B;
   background: linear-gradient(
       0deg,
       rgba(0, 0, 0, 0.85) 0%,
@@ -144,61 +202,32 @@ function updateInputWindowShowInfo(proxy) {
   z-index: 1;
 }
 
-.side-bar__logo {
-  width: 100%;
-  height: 25%;
-  background: url("N.svg") no-repeat center / contain;
-}
-.side-bar__panel {
-  padding-top: 10px;
-  border-top: 0.25px solid rgba(255, 255, 255, 0.35);
+.asside-bar__panel {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
   align-content: center;
 }
-.side-bar__btn {
-  height: 50px;
+
+.asside-bar__btn {
   width: 100%;
+  padding: 0.3em 15px;
   border-radius: 7px;
-  margin-bottom: 10px;
   background: rgba(3, 205, 130, 0.5);
 }
 
-.side-bar__btn:hover {
+.asside-bar__btn:hover {
   background: rgb(2, 184, 117);
 }
 
-/* Main section*/
+/*---------- Main section ----------*/
 
 .main {
-  width: 88vw;
-  height: 100vh;
+  grid-area: C;
   background: url("/main.jpg") no-repeat center / cover;
-}
-
-/* Nav bar block */
-
-.nav-bar {
-  height: 6%;
-  background: rgb(16, 16, 16);
   display: flex;
-  align-items: center;
 }
 
-.nav-bar__search {
-  padding: 0.3em 1em;
-  border-radius: 1em;
-  background: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 1);
-  font-size: 18px;
-  font-weight: bold;
-  transition: all 0.35s ease;
-}
-
-/* Notes block */
-
-.notes-area {
-  width: 100%;
-  height: 94%;
-  display: flex;
-  justify-content: space-between;
+.window-area__btn_red:hover {
+  background: #e71212;
 }
 </style>

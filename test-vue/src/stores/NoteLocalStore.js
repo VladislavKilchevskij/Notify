@@ -44,8 +44,8 @@ async function getNote(title) {
 async function saveOrUpdate(note) {
     let proxy = {};
     if (isEmpty(note)) {
-        proxy.target = Object.assign({}, note);
-        proxy.msg = "Заполните все поля!";
+        proxy.target = cloneNote(note);
+        proxy.msg = 'Проверьте, все ли поля заполнены!';
         return proxy;
     }
     if (!isNew(note)) {
@@ -83,7 +83,7 @@ function deleteNote(note) {
 /*---------------- Util store functions ----------------*/
 
 function isEmpty(note) {
-    if (!note.title || !note.body || !note.category.name) {
+    if (!note.title?.trim() || !note.body?.trim() || !note.category.name?.trim()) {
         return true;
     }
 };

@@ -7,7 +7,11 @@ const props = defineProps({
 
 <template>
   <div class="folders side-bar__panel">
-    <button @click="$emit('transfer-category', '')" class="btn folders__btn">
+    <button
+      @click="$emit('transfer-category', '')"
+      class="btn folders__btn folders__btn_first"
+      v-if="categories.length > 0"
+    >
       <div
         class="folders__color-indicator folders__color-indicator_reset"
       ></div>
@@ -37,17 +41,22 @@ const props = defineProps({
 <style scoped>
 .folders {
   width: 100%;
-  display: inline-grid;
-  grid-template-rows: auto;
-  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: overlay;
 }
 
 .folders__btn {
+  margin-top: 0.3em;
   padding: 0.3em 15px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.2);
   justify-content: space-between;
   position: relative;
+}
+
+.folders__btn_first {
+  margin-top: 10px;
 }
 
 .folders__color-indicator {
@@ -59,11 +68,11 @@ const props = defineProps({
   width: 10px;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
-  transition: all 0.35s ease-in-out;
+  transition: width 0.35s ease-in-out;
 }
 
 .folders__color-indicator_reset {
-  background: #000;
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .folders__btn:hover .folders__color-indicator {
@@ -74,6 +83,9 @@ const props = defineProps({
 .folders__sign {
   z-index: 999;
   font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .folders__sign_bold {

@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
-<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
- <g class="layer">
+<svg width="75" height="35" xmlns="http://www.w3.org/2000/svg">
+
+ <g>
   <title>Layer 1</title>
-  <text fill="#fff" font-family="Sans-serif" font-size="34" font-weight="normal" id="svg_1" stroke="#000000" stroke-width="0" text-anchor="middle" transform="matrix(5.16747 0 0 5.47375 -448.245 -482.802)" x="148.34576" xml:space="preserve" y="141.624909">NOTIFY</text>
+  <text transform="matrix(1.21687 0 0 1.24201 -0.307613 -3.55739)" stroke="rgba(255, 255, 255, 0.85)" xml:space="preserve" text-anchor="start" font-family="'Asap'" font-size="24" id="svg_1" y="24.82617" x="1.07457" stroke-width="0" fill="rgba(255, 255, 255, 0.85)">Notes</text>
  </g>
 </svg>

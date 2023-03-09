@@ -7,7 +7,7 @@ const props = defineProps({
     body: String,
     category: {
       name: String,
-      color: "",
+      color: String,
     },
     timestamp: Date,
   },
@@ -26,7 +26,7 @@ async function submitForm(note) {
 </script>
 
 <template>
-  <Transition name="hide-left">
+  <Transition name="hide">
     <form @submit.prevent="submitForm(note)" class="window-area" v-if="show">
       <div class="window-area__head">
         <input
@@ -83,7 +83,7 @@ async function submitForm(note) {
 <style scoped>
 .window-area {
   height: 100%;
-  width: 67%;
+  width: 40%;
   background: #fff;
   border-right: 0.25px solid rgba(0, 0, 0, 0.3);
   display: inline-grid;
@@ -150,6 +150,7 @@ async function submitForm(note) {
   border-bottom: 0.25px solid rgba(0, 0, 0, 0.3);
   resize: none;
 }
+
 .window-area__btn {
   display: inline-block;
   height: 100%;
@@ -173,14 +174,14 @@ async function submitForm(note) {
 
 /* Transition component properties */
 
-.hide-left-enter-from,
-.hide-left-leave-to {
+.hide-enter-from,
+.hide-leave-to {
   opacity: 0;
-  width: 0%;
+  width: 0;
 }
 
-.hide-left-enter-active,
-.hide-left-leave-active {
+.hide-enter-active,
+.hide-leave-active {
   transition: all 1s ease;
 }
 </style>

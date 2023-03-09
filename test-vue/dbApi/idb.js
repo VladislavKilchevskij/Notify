@@ -86,7 +86,7 @@ export default {
                     if (cursor.value.id === note.id) {
                         let updateData = cursor.value;
                         updateData = cloneNote(note);
-                        const updateRequest = cursor.update(updateData);
+                        cursor.update(updateData);
                     } else {
                         cursor.continue();
                     }

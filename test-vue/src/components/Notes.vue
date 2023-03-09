@@ -1,8 +1,9 @@
 <script setup>
 const props = defineProps({
   notes: Array,
+  isWindowActive: Boolean,
 });
-const emit = defineEmits(["transferData:note", "update:show", "deleteClick"]);
+const emit = defineEmits(["transferData:note", "update:show", "deleteEvent"]);
 function openNoteToEdit(note) {
   emit("transferData:note", note);
   emit("update:show");
@@ -11,53 +12,57 @@ function doDelete(item) {
   let proxy = {};
   proxy.target = item;
   proxy.msg = "Вы действительно хотите удалить заметку?";
-  emit("deleteClick", proxy);
+  emit("deleteEvent", proxy);
 }
 </script>
 
 <template>
-  <div class="notes-list">
-    <div
-      class="note"
-      v-for="note of notes"
-      :key="note.id"
-      :note="note"
-      @click="openNoteToEdit(note)"
-    >
-      <div
-        :style="{ background: note.category.color }"
-        class="note__category-color-indicator"
-      ></div>
-      <h4 class="note__title">
-        {{ note.title }}
-      </h4>
-      <p class="note__body">
-        {{ note.body }}
-      </p>
-      <div class="note__panel">
-        <p class="note__timestamp">{{ note.timestamp }}</p>
-        <button class="btn note__btn" @click.stop="doDelete(note)"></button>
-      </div>
+  <Transition name="short">
+    <div class="notes-list" :class="{ halfWidth: isWindowActive }">
+      <TransitionGroup name="list">
+        <div
+          class="note"
+          v-for="note of notes"
+          :key="note.id"
+          :note="note"
+          @click="openNoteToEdit(note)"
+        >
+          <div
+            :style="{ background: note.category.color }"
+            class="note__category-color-indicator"
+          ></div>
+          <h4 class="note__title">
+            {{ note.title }}
+          </h4>
+          <p class="note__body">
+            {{ note.body }}
+          </p>
+          <div class="note__panel">
+            <p class="note__timestamp">{{ note.timestamp }}</p>
+            <button class="btn note__btn" @click.stop="doDelete(note)"></button>
+          </div>
+        </div>
+      </TransitionGroup>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style scoped>
 .notes-list {
   height: 100%;
-  width: 100%;
-  min-width: 33%;
   display: flex;
   flex-wrap: wrap;
   overflow: overlay;
   align-content: start;
   padding: 10px;
-  transition: all 0.35s ease-in-out;
 }
 
+.halfWidth {
+  width: 60%;
+}
 .note {
-  height: 200px;
-  width: 225px;
+  height: 190px;
+  width: 220px;
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
@@ -137,5 +142,34 @@ function doDelete(item) {
 .note__btn:hover {
   background: url("trash-bin.ico") no-repeat center center / 70%,
     rgba(255, 45, 45, 0.7);
+}
+
+/* Transition Group properties */
+
+.list-enter-active,
+.list-leave-active {
+  transition: opacity transform 1.5s ease-in-out;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: scale(0.1);
+}
+
+.list-leave-active {
+  position: absolute;
+}
+
+/* Transition component properties */
+
+.short-enter-to,
+.short-leave-from {
+  width: 60%;
+}
+
+.short-enter-active,
+.short-leave-active {
+  transition: all 1s ease-in-out;
 }
 </style>
