@@ -154,7 +154,7 @@ async function submitForm(note) {
 .window-area__btn {
   display: inline-block;
   height: 100%;
-  width: 20%;
+  width: 100px;
 }
 
 .window-area__btn_blue {
@@ -183,5 +183,25 @@ async function submitForm(note) {
 .hide-enter-active,
 .hide-leave-active {
   transition: all 1s ease;
+}
+
+/* ------------ Media ------------ */
+
+@media screen and (max-width: 1440px) {
+  .window-area {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .window-area {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 1070px) {
+  .window-area__input {
+    font-size: 15px;
+  }
 }
 </style>

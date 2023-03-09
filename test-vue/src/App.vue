@@ -138,7 +138,7 @@ function updateInputWindowShowInfo(proxy) {
   height: 100vh;
   display: grid;
   grid-template-rows: 5vh 95vh;
-  grid-template-columns: 10vw 90vw;
+  grid-template-columns: 200px auto;
   grid-template-areas:
     "A A"
     "B C";
@@ -154,9 +154,8 @@ function updateInputWindowShowInfo(proxy) {
 }
 
 .logo-box {
-  width: 180px;
+  width: 200px;
   height: 100%;
-  margin-right: 13px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -183,7 +182,8 @@ function updateInputWindowShowInfo(proxy) {
   transition: all 0.35s ease;
 }
 
-.nav-bar__search:hover, .nav-bar__search:focus {
+.nav-bar__search:hover,
+.nav-bar__search:focus {
   width: 290px;
 }
 
@@ -225,9 +225,5 @@ function updateInputWindowShowInfo(proxy) {
   grid-area: C;
   background: url("/main.jpg") no-repeat center / cover;
   display: flex;
-}
-
-.window-area__btn_red:hover {
-  background: #e71212;
 }
 </style>

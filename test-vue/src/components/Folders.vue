@@ -15,7 +15,7 @@ const props = defineProps({
       <div
         class="folders__color-indicator folders__color-indicator_reset"
       ></div>
-      <span class="folders__sign folders__sign_bold">Все заметки</span>
+      <span class="folders__sign folders__sign_bold">Все</span>
       <div class="folders__sign folders__sign_bold">
         {{ getNotesCounter }}
       </div>
@@ -94,5 +94,13 @@ const props = defineProps({
 
 .folders__sign_bold {
   font-weight: bold;
+}
+
+/* ------------ Media ------------ */
+
+@media screen and (max-width: 1070px) {
+  .folders__sign {
+    font-size: 16px;
+  }
 }
 </style>

@@ -37,10 +37,8 @@ function doDelete(item) {
           <p class="note__body">
             {{ note.body }}
           </p>
-          <div class="note__panel">
-            <p class="note__timestamp">{{ note.timestamp }}</p>
-            <button class="btn note__btn" @click.stop="doDelete(note)"></button>
-          </div>
+          <p class="note__timestamp">{{ note.timestamp }}</p>
+          <button class="btn note__btn" @click.stop="doDelete(note)"></button>
         </div>
       </TransitionGroup>
     </div>
@@ -61,8 +59,8 @@ function doDelete(item) {
   width: 60%;
 }
 .note {
-  height: 190px;
   width: 220px;
+  aspect-ratio: 4/3;
   margin: 10px;
   padding: 10px;
   border-radius: 5px;
@@ -94,7 +92,7 @@ function doDelete(item) {
   top: 0;
   left: 0;
   width: 100%;
-  height: 3%;
+  height: 5px;
   background: #000;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -127,12 +125,14 @@ function doDelete(item) {
   );
 }
 
-.note__panel {
-  display: flex;
-  justify-content: space-between;
+.note__timestamp {
+  font-size: 13px;
 }
 
 .note__btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
   width: 24px;
   height: 24px;
   border-radius: 10%;
@@ -171,5 +171,47 @@ function doDelete(item) {
 .short-enter-active,
 .short-leave-active {
   transition: all 1s ease-in-out;
+}
+
+/* ------------ Media ------------ */
+
+@media screen and (max-width: 1440px) {
+  .halfWidth {
+    width: 50%;
+  }
+  .short-enter-to,
+  .short-leave-from {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .halfWidth {
+    width: 30%;
+  }
+  .short-enter-to,
+  .short-leave-from {
+    width: 30%;
+  }
+}
+
+@media screen and (max-width: 1070px) {
+  .note {
+    width: 180px;
+    aspect-ratio: 1/0.4;
+    grid-template-columns: auto;
+    grid-template-rows: 1.5em 1.4em;
+  }
+
+  .note__title {
+    width: 5em;
+    font-size: 18px;
+  }
+  .note__body {
+    display: none;
+  }
+  .note__btn {
+    top: 10px;
+  }
 }
 </style>
