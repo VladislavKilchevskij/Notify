@@ -30,7 +30,7 @@ const props = defineProps({
         class="folders__color-indicator"
         :style="{ background: category.color }"
       ></div>
-      <span class="folders__sign">{{ category.name }}</span>
+      <span class="folders__sign folders__sign_padding-right">{{ category.name }}</span>
       <div class="folders__sign">
         {{ category.count }}
       </div>
@@ -86,6 +86,10 @@ const props = defineProps({
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.folders__sign_padding-right {
+  padding-right: 5px;
 }
 
 .folders__sign_bold {
