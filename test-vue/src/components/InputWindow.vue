@@ -1,7 +1,7 @@
 <script setup>
-import { saveOrUpdate, changeCategoryColor } from "../stores/NoteLocalStore";
+import { saveOrUpdate, changeCategoryColor } from "../stores/NoteLocalStore.js";
 const props = defineProps({
-  show: Boolean,
+  toogleWindow: Boolean,
   note: {
     title: String,
     body: String,
@@ -13,9 +13,15 @@ const props = defineProps({
   },
   categories: Array,
 });
-const emit = defineEmits(["update:window"]);
+const emit = defineEmits([
+  "transfer-data:refreshWindow",
+  "transfer-event:closeWindow",
+]);
 function updateWindow(response) {
-  emit("update:window", response);
+  emit("transfer-data:refreshWindow", response);
+}
+function closeWindow() {
+  emit("transfer-event:closeWindow");
 }
 
 async function submitForm(note) {
@@ -27,7 +33,11 @@ async function submitForm(note) {
 
 <template>
   <Transition name="hide">
-    <form @submit.prevent="submitForm(note)" class="window-area" v-if="show">
+    <form
+      @submit.prevent="submitForm(note)"
+      class="window-area"
+      v-show="toogleWindow"
+    >
       <div class="window-area__head">
         <input
           v-model="note.title"
@@ -71,7 +81,7 @@ async function submitForm(note) {
         </button>
         <button
           class="btn window-area__btn window-area__btn_red"
-          @click.prevent="$emit('update:show')"
+          @click.prevent="closeWindow"
         >
           Закрыть
         </button>
@@ -82,13 +92,13 @@ async function submitForm(note) {
 
 <style scoped>
 .window-area {
-  height: 100%;
-  width: 40%;
+  width: auto;
+  flex: 1;
   background: #fff;
   border-right: 0.25px solid rgba(0, 0, 0, 0.3);
   display: inline-grid;
   grid-template-columns: auto;
-  grid-template-rows: 4% auto 5%;
+  grid-template-rows: 35px auto 35px;
 }
 
 .window-area__head {
@@ -182,26 +192,39 @@ async function submitForm(note) {
 
 .hide-enter-active,
 .hide-leave-active {
-  transition: all 1s ease;
+  transition: all 1s ease-in-out;
 }
 
 /* ------------ Media ------------ */
 
-@media screen and (max-width: 1440px) {
+@media (max-width: 824px) {
   .window-area {
-    width: 50%;
+    grid-template-rows: 50px auto 50px;
+  }
+  .window-area__color {
+    max-width: 50px;
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media (max-width: 576px) {
   .window-area {
-    width: 70%;
+    position: absolute;
+    top: 1vh;
+    left: 2.5vw;
+    width: 95vw;
+    height: calc(100vh - 60px - 4vh);
+    border: 0.25px solid rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    z-index: 998;
   }
-}
-
-@media screen and (max-width: 1070px) {
-  .window-area__input {
-    font-size: 15px;
+  .window-area__input_title {
+    border-top-left-radius: 10px;
+  }
+  .window-area__input_category {
+    border-top-right-radius: 10px;
+  }
+  .window-area__btn {
+    border-radius: 10px;
   }
 }
 </style>

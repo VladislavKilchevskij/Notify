@@ -1,0 +1,5 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"
+    xml:space="preserve">
+    <circle cx="55" cy="55" r="21" fill="transparent" stroke="rgba(255, 255, 255, 0.7)" stroke-width="9"/>
+    <line x1="75" y1="75" x2="95" y2="95" style="stroke:rgba(255, 255, 255, 0.7);stroke-width:9;"/>
+</svg>

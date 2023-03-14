@@ -2,26 +2,38 @@
 const props = defineProps({
   notes: Array,
   isWindowActive: Boolean,
+  viewResolver: Object
 });
-const emit = defineEmits(["transferData:note", "update:show", "deleteEvent"]);
+const emit = defineEmits([
+  "transfer-data:editNote",
+  "transfer-data:deleteNote",
+  "transfer-event:openWindow",
+]);
 function openNoteToEdit(note) {
-  emit("transferData:note", note);
-  emit("update:show");
+  emit("transfer-data:editNote", note);
+  emit("transfer-event:openWindow");
 }
 function doDelete(item) {
   let proxy = {};
   proxy.target = item;
   proxy.msg = "Вы действительно хотите удалить заметку?";
-  emit("deleteEvent", proxy);
+  emit("transfer-data:deleteNote", proxy);
 }
 </script>
 
 <template>
   <Transition name="short">
-    <div class="notes-list" :class="{ halfWidth: isWindowActive }">
+    <div
+      class="notes-list"
+      :class="{
+        halfWidth:
+          viewResolver.width > 576 ? (isWindowActive ? true : false) : false,
+      }"
+    >
       <TransitionGroup name="list">
         <div
           class="note"
+          :class="{ noteSmaller: isWindowActive }"
           v-for="note of notes"
           :key="note.id"
           :note="note"
@@ -47,16 +59,18 @@ function doDelete(item) {
 
 <style scoped>
 .notes-list {
+  width: 100%;
   height: 100%;
   display: flex;
   flex-wrap: wrap;
   overflow: overlay;
-  align-content: start;
+  align-content: flex-start;
   padding: 10px;
+  transition: all 1s ease-in-out;
 }
 
 .halfWidth {
-  width: 60%;
+  width: 50%;
 }
 .note {
   width: 220px;
@@ -75,6 +89,10 @@ function doDelete(item) {
   grid-template-rows: 1.5em auto 1.4em;
   gap: 0.5em;
   position: relative;
+}
+
+.noteSmaller {
+  width: 185px;
 }
 
 .note:hover {
@@ -127,6 +145,8 @@ function doDelete(item) {
 
 .note__timestamp {
   font-size: 13px;
+  padding-right: 30px;
+  line-height: 1.7em;
 }
 
 .note__btn {
@@ -163,55 +183,80 @@ function doDelete(item) {
 
 /* Transition component properties */
 
-.short-enter-to,
-.short-leave-from {
-  width: 60%;
+.short-enter-from,
+.short-leave-to {
+  width: 100%;
 }
 
-.short-enter-active,
-.short-leave-active {
+.short-enter-active .notes-list,
+.short-leave-active .notes-list {
   transition: all 1s ease-in-out;
 }
 
 /* ------------ Media ------------ */
 
-@media screen and (max-width: 1440px) {
+@media (max-width: 1400px) {
   .halfWidth {
-    width: 50%;
-  }
-  .short-enter-to,
-  .short-leave-from {
-    width: 50%;
+    width: 40%;
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media (max-width: 1200px) {
   .halfWidth {
-    width: 30%;
-  }
-  .short-enter-to,
-  .short-leave-from {
-    width: 30%;
+    width: 26%;
   }
 }
 
-@media screen and (max-width: 1070px) {
+@media (max-width: 992px) {
+  .halfWidth {
+    width: 30%;
+  }
   .note {
-    width: 180px;
-    aspect-ratio: 1/0.4;
-    grid-template-columns: auto;
-    grid-template-rows: 1.5em 1.4em;
+    width: 185px;
   }
+  .noteSmaller {
+    width: 160px;
+  }
+}
 
+@media (max-width: 824px) {
+  .halfWidth {
+    width: 33.5%;
+  }
+  .note {
+    width: 160px;
+  }
+}
+
+@media (max-width: 576px) {
+  .note__list {
+    justify-content: space-between;
+  }
+  .note {
+    width: 29%;
+  }
+}
+
+@media (max-width: 541px) {
   .note__title {
-    width: 5em;
-    font-size: 18px;
+    font-size: 17px;
   }
   .note__body {
-    display: none;
+    font-size: 14px;
   }
-  .note__btn {
-    top: 10px;
+  .note__timestamp {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 495px) {
+  .note {
+    width: 45%;
+  }
+}
+@media (max-width: 425px) {
+  .note {
+    width: 43%;
   }
 }
 </style>

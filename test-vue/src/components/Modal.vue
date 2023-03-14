@@ -34,7 +34,7 @@ function closeClick() {
 <style scoped>
 .modal-mask {
   position: fixed;
-  z-index: 99;
+  z-index: 999;
   top: 0;
   left: 0;
   width: 100vw;
@@ -105,4 +105,7 @@ function closeClick() {
 .modal-leave-active {
   transition: all 0.35s ease-in-out;
 }
+
+/* ------------ Media ------------ */
+
 </style>
